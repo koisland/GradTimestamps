@@ -3,6 +3,23 @@ import pytube
 import tqdm
 
 from config import Config
+from logger import get_logger
+
+
+log = get_logger()
+
+
+def dl_multiple(video_list, output):
+    # download multiple videos with pytube
+    for url in video_list:
+        dl = PytubeDl(url=url, output_dir=output, media_type="video_only", res="720p")
+        grad_video = dl.download()
+
+        # set date and fps
+        date = dl.pytube_obj.publish_date
+        yield f"{date.month}_{date.day}_{date.year}"
+        yield dl.fps
+        yield grad_video
 
 
 class PytubeDl(Config):
@@ -40,7 +57,7 @@ class PytubeDl(Config):
 
     @property
     def pytube_obj(self):
-        return pytube.YouTube(self.url, on_progress_callback=self._progress)
+        return pytube.YouTube(self.url, on_progress_callback=self._progress, on_complete_callback=self._finished)
 
     @property
     def output_dir(self):
@@ -52,6 +69,10 @@ class PytubeDl(Config):
             raise Exception("Invalid output directory.")
 
         self._output_dir = output_dir
+
+    def _finished(self, *args):
+        _, file_path = args
+        log.info(f"File downloaded to {file_path}")
 
     def _progress(self, *args):
         (_, chunk, _) = args
