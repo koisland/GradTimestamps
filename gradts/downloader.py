@@ -77,5 +77,5 @@ class PytubeDl(Config):
 
 
 if __name__ == "__main__":
-    video = PytubeDl(Config.URL, output_dir=Config.OUTPUT_DIR, media_type="video_only", res="1080p")
+    video = PytubeDl(Config.URLS[0], output_dir=Config.OUTPUT_DIR, media_type="video_only", res="1080p")
     video.download()

@@ -1,5 +1,5 @@
 import unittest
-from main import time_to_frames
+from main import time_to
 
 
 class TestMain(unittest.TestCase):
@@ -8,4 +8,4 @@ class TestMain(unittest.TestCase):
         case_1 = 694494
         case_1_fps = 30
 
-        self.assertEqual(time_to_frames(case_1, case_1_fps), (6, 25, 49))
+        self.assertEqual(time_to(case_1, case_1_fps), (6, 25, 49))
