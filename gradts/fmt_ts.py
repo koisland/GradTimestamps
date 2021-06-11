@@ -15,7 +15,7 @@ def format_timestamp(json_path):
             timestamp = ':'.join(f"0{num}" if len(str(num)) == 1 else str(num) for num in details["Time"])
             secs = time_to(details["Time"], rtn_fmt="seconds")
 
-            yield timestamp, grad_name, details["Major"], f"{Config.URL_TIMESTAMPED}{secs}"
+            yield timestamp, grad_name, details["Major"], f"{Config.URL_TIMESTAMPED}{secs}s"
 
 
 if __name__ == "__main__":

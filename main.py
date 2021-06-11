@@ -1,6 +1,5 @@
 import os
 import json
-import datetime
 
 import cv2
 import imutils
@@ -14,7 +13,7 @@ from config import Config
 if __name__ == "__main__":
     try:
         # download video with pytube
-        dl = PytubeDl(url=Config.URL, output_dir=Config.SRCS_DIR, media_type="video_only", res="720p")
+        dl = PytubeDl(url=Config.URLS[0], output_dir=Config.SRCS_DIR, media_type="video_only", res="720p")
         grad_video = dl.download()
 
         # set date and fps
@@ -23,8 +22,8 @@ if __name__ == "__main__":
     except Exception:
         # set defaults if fails to download.
         grad_video = os.path.join(Config.SRCS_DIR, "Grad Walk  June 7 2021.mp4")
-        date = datetime.datetime.now()
-        fps = 30
+        date = Config.DEFAULT_DATE
+        fps = Config.DEFAULT_FPS
 
     # format date
     date = f"{date.month}_{date.day}_{date.year}"
@@ -60,9 +59,9 @@ if __name__ == "__main__":
         crop = inv[bbox["Y"][0]:bbox["Y"][1], bbox["X"][0]:bbox["X"][1]]
 
         # FOR DEBUGGING
-        # cv2.imshow(f"gray_{start_time_frames}", frame)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+        cv2.imshow(f"gray_{start_time_frames}", frame)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
         # Convert image roi to string
         text = pytesseract.image_to_string(crop)
