@@ -1,4 +1,3 @@
-import datetime
 import os
 
 
@@ -12,7 +11,7 @@ class Config:
     OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
     BBOX = {"X": (100, 590), "Y": (265, 335)}
     SKIP_EVERY = 4
-    CHAR_WHITELIST = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    CHAR_WHITELIST = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz '"
 
     # pytube stuff
     VALID_RESOLUTIONS = ("144p", "240p", "360p", "480p", "720p", "1080p")

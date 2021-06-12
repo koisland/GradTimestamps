@@ -88,7 +88,7 @@ class PytubeDl(Config):
             return self.pytube_obj.streams.filter(resolution=self.res, progressive=False).first()
 
     def download(self):
-        self.progress_bar = tqdm.tqdm(total=self.stream.filesize, leave=False)
+        self.progress_bar = tqdm.tqdm(total=self.stream.filesize, leave=True, position=0)
         output_file_path = os.path.join(self.output_dir, self.stream.default_filename)
         if os.path.exists(output_file_path):
             self.progress_bar.update(self.stream.filesize)

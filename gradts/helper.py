@@ -1,4 +1,3 @@
-
 def time_to(time, rtn_fmt="frames", fps=30):
     if isinstance(time, tuple) or isinstance(time, list):
         try:
@@ -18,3 +17,14 @@ def time_to(time, rtn_fmt="frames", fps=30):
         minutes = (seconds // 60) % 60
         remaining_seconds = seconds % 60
         return hours, minutes, remaining_seconds
+
+
+def loading_animation(func):
+    def loading_func():
+        animation = ["|", "/", "—", "\\"]
+        idx = 0
+        while func():
+            print(animation[idx], end="\r")
+            idx += 1
+
+    return loading_func
