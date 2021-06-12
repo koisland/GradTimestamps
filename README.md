@@ -2,7 +2,7 @@
 
 A small project to automatically get timestamps from UCSB's 2021 graduation ceremony stream.
 
-Uses pytube to download the videos, 
+Uses pytube/tqdm to download the videos, 
 OpenCV to perform image processing, 
 and Tesseract OCR/pytesseract to parse text from the image.
 

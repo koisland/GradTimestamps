@@ -1,6 +1,5 @@
 import os
 import json
-from collections import defaultdict
 
 import cv2
 import imutils
@@ -17,12 +16,12 @@ if __name__ == "__main__":
 
     log.info("Starting.")
 
-    for v_info in dl_multiple(video_list=Config.URLS, output=Config.SRCS_DIR):
+    for v_info, link in zip(dl_multiple(video_list=Config.URLS, output=Config.SRCS_DIR), Config.URLS_TIMESTAMPED):
 
         date, fps, grad_video = v_info
 
         # set grad data output dir
-        data = os.path.join(Config.OUTPUT_DIR, f"grads_{date}.json")
+        grad_list = os.path.join(Config.OUTPUT_DIR, f"grads_{date}.json")
         grads = {}
 
         video = cv2.VideoCapture(grad_video)
@@ -37,25 +36,24 @@ if __name__ == "__main__":
             if not ret:
                 break
 
-            # resize, grayscale,  blur, threshold and invert image.
+            # resize, grayscale, threshold and invert image.
             frame = imutils.resize(frame, width=600)
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            blur = cv2.GaussianBlur(gray, (5, 5), 0)
-            _, thresh = cv2.threshold(blur, 150, 255, cv2.THRESH_BINARY)
+            _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
             inv = cv2.bitwise_not(thresh)
 
             # TODO: Find way to automate. use cv2.inrange with blue bgr?
             # set bbox of roi. format is {"X": (x0, x1), "Y": (y0, y1)}
-            bbox = Config.BBOXES
+            bbox = Config.BBOX
             crop = inv[bbox["Y"][0]:bbox["Y"][1], bbox["X"][0]:bbox["X"][1]]
 
             # FOR DEBUGGING
-            cv2.imshow(f"gray_{start_time_frames}", frame)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
+            # cv2.imshow(f"frame_{start_time_frames}", crop)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows()
 
             # Convert image roi to string
-            text = pytesseract.image_to_string(crop)
+            text = pytesseract.image_to_string(crop, config=f"-c tessedit_char_whitelist={Config.CHAR_WHITELIST}")
 
             # remove empty text and get first two pieces of text sep by newline char.
             split_text = [txt for txt in text.split("\n")[0:3] if txt]
@@ -69,16 +67,21 @@ if __name__ == "__main__":
 
                 # add to dict if hasn't be added taking first time found.
                 if grads.get(name) is None:
-                    log.info(f"{name} @ {time}")
-                    grads[name] = {"Time": time, "Major": major}
+                    # pad nums in timestamp with zeroes
+                    timestamp = ':'.join(f"0{num}" if len(str(num)) == 1 else str(num) for num in time)
+                    secs = time_to(time, rtn_fmt="seconds")
+                    link = f"{link}{secs}s"
 
-            # skip every 120th frame ie. 4 secs
-            start_time_frames += 120
+                    log.info(f"{name} @ {time} on {date}")
+                    grads[name] = {"Timestamp": timestamp, "Link": link, "Major": major}
+
+            # skip desired number of seconds
+            start_time_frames += (Config.SKIP_EVERY * fps)
             video.set(cv2.CAP_PROP_POS_FRAMES, start_time_frames)
 
         # dump dict into json
-        json = json.dumps(people)
-        file = open(data, "w")
+        json = json.dumps(grads)
+        file = open(grad_list, "w")
         file.write(json)
         file.close()
 

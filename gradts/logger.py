@@ -9,7 +9,7 @@ def get_logger():
     if logger.hasHandlers():
         logger.handlers.clear()
 
-    file_handler = RotatingFileHandler('../logs/grad_ts.log', maxBytes=10240, backupCount=10)
+    file_handler = RotatingFileHandler('logs/grad_ts.log', maxBytes=10240, backupCount=10)
     file_handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s: %(message)s"))
     logger.setLevel(logging.INFO)
     logger.addHandler(file_handler)

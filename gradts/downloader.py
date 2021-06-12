@@ -3,7 +3,7 @@ import pytube
 import tqdm
 
 from config import Config
-from logger import get_logger
+from gradts.logger import get_logger
 
 
 log = get_logger()
@@ -17,9 +17,7 @@ def dl_multiple(video_list, output):
 
         # set date and fps
         date = dl.pytube_obj.publish_date
-        yield f"{date.month}_{date.day}_{date.year}"
-        yield dl.fps
-        yield grad_video
+        yield f"{date.month}_{date.day}_{date.year}", dl.fps, grad_video
 
 
 class PytubeDl(Config):
@@ -72,6 +70,7 @@ class PytubeDl(Config):
 
     def _finished(self, *args):
         _, file_path = args
+        print(f"\nFinished and saved file to {file_path}")
         log.info(f"File downloaded to {file_path}")
 
     def _progress(self, *args):
